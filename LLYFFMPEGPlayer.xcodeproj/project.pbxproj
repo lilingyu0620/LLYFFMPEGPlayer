@@ -824,12 +824,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PW2BL84NY9;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/LLYFFMPEGPlayer/FFmpeg-iOS/include";
 				INFOPLIST_FILE = LLYFFMPEGPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/LLYFFMPEGPlayer/FFmpeg-iOS/lib",
 				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lly.LLYFFMPEGPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -842,12 +844,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PW2BL84NY9;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/LLYFFMPEGPlayer/FFmpeg-iOS/include";
 				INFOPLIST_FILE = LLYFFMPEGPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/LLYFFMPEGPlayer/FFmpeg-iOS/lib",
 				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lly.LLYFFMPEGPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
