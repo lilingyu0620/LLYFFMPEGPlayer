@@ -22,6 +22,12 @@
 		0A7FBA3420A2DB47002DE37D /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A7FBA2D20A2DB47002DE37D /* libavdevice.a */; };
 		0A7FBA3520A2DB47002DE37D /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A7FBA2E20A2DB47002DE37D /* libswresample.a */; };
 		0A7FBA3620A2DB47002DE37D /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A7FBA2F20A2DB47002DE37D /* libswscale.a */; };
+		0A7FBA3F20A2DF71002DE37D /* test.flv in Resources */ = {isa = PBXBuildFile; fileRef = 0A7FBA3E20A2DF71002DE37D /* test.flv */; };
+		0A7FBA4220A2DF92002DE37D /* CommonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA4120A2DF92002DE37D /* CommonUtil.m */; };
+		0A7FBA4820A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA4720A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m */; };
+		0A7FBA4B20A2E307002DE37D /* LLYSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA4A20A2E307002DE37D /* LLYSync.m */; };
+		0A7FBA4E20A2E323002DE37D /* LLYDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA4D20A2E323002DE37D /* LLYDecoder.m */; };
+		0A7FBA5120A2E352002DE37D /* LLYAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA5020A2E352002DE37D /* LLYAudioPlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,6 +168,17 @@
 		0A7FBA2D20A2DB47002DE37D /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libavdevice.a; sourceTree = "<group>"; };
 		0A7FBA2E20A2DB47002DE37D /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libswresample.a; sourceTree = "<group>"; };
 		0A7FBA2F20A2DB47002DE37D /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libswscale.a; sourceTree = "<group>"; };
+		0A7FBA3E20A2DF71002DE37D /* test.flv */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.flv; sourceTree = "<group>"; };
+		0A7FBA4020A2DF92002DE37D /* CommonUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonUtil.h; sourceTree = "<group>"; };
+		0A7FBA4120A2DF92002DE37D /* CommonUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommonUtil.m; sourceTree = "<group>"; };
+		0A7FBA4620A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYFFMPEGPlayerViewController.h; sourceTree = "<group>"; };
+		0A7FBA4720A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYFFMPEGPlayerViewController.m; sourceTree = "<group>"; };
+		0A7FBA4920A2E307002DE37D /* LLYSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYSync.h; sourceTree = "<group>"; };
+		0A7FBA4A20A2E307002DE37D /* LLYSync.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYSync.m; sourceTree = "<group>"; };
+		0A7FBA4C20A2E323002DE37D /* LLYDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYDecoder.h; sourceTree = "<group>"; };
+		0A7FBA4D20A2E323002DE37D /* LLYDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYDecoder.m; sourceTree = "<group>"; };
+		0A7FBA4F20A2E352002DE37D /* LLYAudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYAudioPlayer.h; sourceTree = "<group>"; };
+		0A7FBA5020A2E352002DE37D /* LLYAudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYAudioPlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +236,9 @@
 		0A7FB98B20A2DB16002DE37D /* LLYFFMPEGPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				0A7FBA3820A2DF2D002DE37D /* player */,
+				0A7FBA3D20A2DF2D002DE37D /* resource */,
+				0A7FBA3720A2DF2D002DE37D /* utils */,
 				0A7FB9BE20A2DB47002DE37D /* FFmpeg-iOS */,
 				0A7FB98C20A2DB16002DE37D /* AppDelegate.h */,
 				0A7FB98D20A2DB16002DE37D /* AppDelegate.m */,
@@ -434,6 +454,70 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
+		0A7FBA3720A2DF2D002DE37D /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				0A7FBA4020A2DF92002DE37D /* CommonUtil.h */,
+				0A7FBA4120A2DF92002DE37D /* CommonUtil.m */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		0A7FBA3820A2DF2D002DE37D /* player */ = {
+			isa = PBXGroup;
+			children = (
+				0A7FBA3920A2DF2D002DE37D /* audioplayer */,
+				0A7FBA3A20A2DF2D002DE37D /* videoplayer */,
+				0A7FBA3B20A2DF2D002DE37D /* decoder */,
+				0A7FBA3C20A2DF2D002DE37D /* sync */,
+				0A7FBA4620A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.h */,
+				0A7FBA4720A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m */,
+			);
+			path = player;
+			sourceTree = "<group>";
+		};
+		0A7FBA3920A2DF2D002DE37D /* audioplayer */ = {
+			isa = PBXGroup;
+			children = (
+				0A7FBA4F20A2E352002DE37D /* LLYAudioPlayer.h */,
+				0A7FBA5020A2E352002DE37D /* LLYAudioPlayer.m */,
+			);
+			path = audioplayer;
+			sourceTree = "<group>";
+		};
+		0A7FBA3A20A2DF2D002DE37D /* videoplayer */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = videoplayer;
+			sourceTree = "<group>";
+		};
+		0A7FBA3B20A2DF2D002DE37D /* decoder */ = {
+			isa = PBXGroup;
+			children = (
+				0A7FBA4C20A2E323002DE37D /* LLYDecoder.h */,
+				0A7FBA4D20A2E323002DE37D /* LLYDecoder.m */,
+			);
+			path = decoder;
+			sourceTree = "<group>";
+		};
+		0A7FBA3C20A2DF2D002DE37D /* sync */ = {
+			isa = PBXGroup;
+			children = (
+				0A7FBA4920A2E307002DE37D /* LLYSync.h */,
+				0A7FBA4A20A2E307002DE37D /* LLYSync.m */,
+			);
+			path = sync;
+			sourceTree = "<group>";
+		};
+		0A7FBA3D20A2DF2D002DE37D /* resource */ = {
+			isa = PBXGroup;
+			children = (
+				0A7FBA3E20A2DF71002DE37D /* test.flv */,
+			);
+			path = resource;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -542,6 +626,7 @@
 			files = (
 				0A7FB99920A2DB16002DE37D /* LaunchScreen.storyboard in Resources */,
 				0A7FB99620A2DB16002DE37D /* Assets.xcassets in Resources */,
+				0A7FBA3F20A2DF71002DE37D /* test.flv in Resources */,
 				0A7FB99420A2DB16002DE37D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -567,8 +652,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A7FBA4E20A2E323002DE37D /* LLYDecoder.m in Sources */,
 				0A7FB99120A2DB16002DE37D /* ViewController.m in Sources */,
 				0A7FB99C20A2DB16002DE37D /* main.m in Sources */,
+				0A7FBA5120A2E352002DE37D /* LLYAudioPlayer.m in Sources */,
+				0A7FBA4220A2DF92002DE37D /* CommonUtil.m in Sources */,
+				0A7FBA4820A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m in Sources */,
+				0A7FBA4B20A2E307002DE37D /* LLYSync.m in Sources */,
 				0A7FB98E20A2DB16002DE37D /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
