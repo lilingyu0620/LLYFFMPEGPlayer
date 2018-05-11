@@ -225,21 +225,233 @@
     return _connectionRetry <= NET_WORK_STREAM_RETRY_TIME;
 }
 - (void)closeFile{
+    NSLog(@"Enter closeFile...");
+    if (_buriedPoint.failOpenType == 1) {
+        _buriedPoint.duration = ([[NSDate date] timeIntervalSince1970] * 1000 - _buriedPoint.beginOpenTime) / 1000.0f;
+    }
     
+    [self interrupt];
+    
+    [self closeAudioStream];
+    [self closeVideoStream];
+    
+    _videoStreams = nil;
+    _audioStreams = nil;
+    
+    if (_formatCtx) {
+        _formatCtx->interrupt_callback.opaque = NULL;
+        _formatCtx->interrupt_callback.callback = NULL;
+        avformat_close_input(&_formatCtx);
+        _formatCtx = NULL;
+    }
+    float decodeFrameAVGTimeMills = (double)decodeVideoFrameWasteTimeMills / (float)totalVideoFrameCount;
+    NSLog(@"Decoder decoder totalVideoFramecount is %d decodeFrameAVGTimeMills is %.3f", totalVideoFrameCount, decodeFrameAVGTimeMills);
 }
 - (BOOL)isOpenInputSuccess{
-    
+    return _isOpenInputSuccess;
 }
 
 //打开视频流
-- (BOOL)openVideoStream{}
+- (BOOL)openVideoStream{
+    _videoStreamIndex = -1;
+    _videoStreams = collectionStreams(_formatCtx, AVMEDIA_TYPE_VIDEO);
+    for (NSNumber *index in _videoStreams) {
+        const NSUInteger streamIndex = [index integerValue];
+        AVCodecContext *codecCtx = _formatCtx->streams[streamIndex]->codec;
+        //获取该stream对应的解码器
+        AVCodec *codec = avcodec_find_decoder(codecCtx->codec_id);
+        if (!codec) {
+            NSLog(@"Find Video Decoder Failed codec_id %d AV_CODEC_ID_H264 is %d", codecCtx->codec_id, AV_CODEC_ID_H264);
+            return NO;
+        }
+        
+        int openCodecErrorCode = 0;
+        if ((openCodecErrorCode = avcodec_open2(codecCtx, codec, NULL)) < 0) {
+            NSLog(@"open Video Codec Failed openCodecErr is %s", av_err2str(openCodecErrorCode));
+            return NO;
+        }
+        
+        _videoFrame = av_frame_alloc();
+        if (!_videoFrame) {
+            NSLog(@"Alloc Video Frame Failed...");
+            avcodec_close(codecCtx);
+            return NO;
+        }
+        
+        _videoStreamIndex = streamIndex;
+        _videoCodecCtx = codecCtx;
+        AVStream *st = _formatCtx->streams[streamIndex];
+        avStreamFPSTimeBase(st, 0.04, &_fps, &_videoTimeBase);
+    }
+    return YES;
+}
 //关闭视频流
-- (void)closeVideoStream{}
+- (void)closeVideoStream{
+    _videoStreamIndex = -1;
+    
+    [self closeScaler];
+    
+    if (_videoFrame) {
+        av_free(_videoFrame);
+        _videoFrame = NULL;
+    }
+    
+    if (_videoCodecCtx) {
+        avcodec_close(_videoCodecCtx);
+        _videoCodecCtx = NULL;
+    }
+}
 
 //打开音频流
-- (BOOL)openAudioStream{}
+- (BOOL)openAudioStream{
+    _audioStreamIndex = -1;
+    _audioStreams = collectionStreams(_formatCtx, AVMEDIA_TYPE_AUDIO);
+    for (NSNumber *index in _audioStreams) {
+        const NSUInteger streamIndex = [index integerValue];
+        AVCodecContext *codecCtx = _formatCtx->streams[streamIndex]->codec;
+        //获取该stream对应的解码器
+        AVCodec *codec = avcodec_find_decoder(codecCtx->codec_id);
+        if(!codec){
+            NSLog(@"Find Audio Decoder Failed codec_id %d CODEC_ID_AAC is %d", codecCtx->codec_id, AV_CODEC_ID_AAC);
+            return NO;
+        }
+        
+        int openCodecErrorCode = 0;
+        if ((openCodecErrorCode = avcodec_open2(codecCtx, codec, NULL)) < 0) {
+            NSLog(@"open Audio Codec Failed openCodecErr is %s", av_err2str(openCodecErrorCode));
+            return NO;
+        }
+        
+        //是否需要重采样
+        SwrContext *swrContext = NULL;
+        if (![self audioCodecIsSupported:codecCtx]) {
+            
+            NSLog(@"because of audio Codec Is Not Supported so we will init swresampler...");
+            /**
+             * 初始化resampler
+             * @param s               Swr context, can be NULL
+             * @param out_ch_layout   output channel layout (AV_CH_LAYOUT_*)
+             * @param out_sample_fmt  output sample format (AV_SAMPLE_FMT_*).
+             * @param out_sample_rate output sample rate (frequency in Hz)
+             * @param in_ch_layout    input channel layout (AV_CH_LAYOUT_*)
+             * @param in_sample_fmt   input sample format (AV_SAMPLE_FMT_*).
+             * @param in_sample_rate  input sample rate (frequency in Hz)
+             * @param log_offset      logging level offset
+             * @param log_ctx         parent logging context, can be NULL
+             */
+            swrContext = swr_alloc_set_opts(NULL, av_get_default_channel_layout(codecCtx->channels), AV_SAMPLE_FMT_S16, codecCtx->sample_rate, av_get_default_channel_layout(codecCtx->channels), codecCtx->sample_fmt, codecCtx->sample_rate, 0, NULL);
+            if (!swrContext || swr_init(swrContext)) {
+                if (swrContext)
+                    swr_free(&swrContext);
+                avcodec_close(codecCtx);
+                NSLog(@"init resampler failed...");
+                return NO;
+            }
+            
+            _audioFrame = av_frame_alloc();
+            if (!_audioFrame) {
+                NSLog(@"Alloc Audio Frame Failed...");
+                if (swrContext)
+                    swr_free(&swrContext);
+                avcodec_close(codecCtx);
+                return NO;
+            }
+            
+            _audioStreamIndex = streamIndex;
+            _audioCodecCtx = codecCtx;
+            _swrContext = swrContext;
+            
+            AVStream *st = _formatCtx->streams[streamIndex];
+            avStreamFPSTimeBase(st, 0.025, 0, &_audioTimeBase);
+        }
+    }
+    return YES;
+}
+
 //关闭音频流
-- (void)closeAudioStream{}
+- (void)closeAudioStream{
+    _audioStreamIndex = -1;
+    
+    if (_swrBuffer) {
+        free(_swrBuffer);
+        _swrBuffer = NULL;
+        _swrBufferSize = 0;
+    }
+    
+    if (_swrContext) {
+        swr_free(&_swrContext);
+        _swrContext = NULL;
+    }
+    
+    if (_audioFrame) {
+        av_free(_audioFrame);
+        _audioFrame = NULL;
+    }
+    
+    if (_audioCodecCtx) {
+        avcodec_close(_audioCodecCtx);
+        _audioCodecCtx = NULL;
+    }
+}
+
+//获取流数据的索引
+static NSArray *collectionStreams(AVFormatContext *formatCtx,enum AVMediaType codecType){
+    NSMutableArray *ma = [NSMutableArray array];
+    for (int i = 0; i < formatCtx->nb_streams; i++) {
+        if (codecType == formatCtx->streams[i]->codec->codec_type) {
+            [ma addObject:@(i)];
+        }
+    }
+    return ma;
+}
+
+static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *pFPS, CGFloat *pTimeBase){
+    CGFloat fps, timebase;
+    //timebase 同 CMTime() 标识时长
+    if (st->time_base.den && st->time_base.num)
+        timebase = av_q2d(st->time_base);
+    else if(st->codec->time_base.den && st->codec->time_base.num)
+        timebase = av_q2d(st->codec->time_base);
+    else
+        timebase = defaultTimeBase;
+    
+    if (st->codec->ticks_per_frame != 1) {
+        NSLog(@"WARNING: st.codec.ticks_per_frame=%d", st->codec->ticks_per_frame);
+        //timebase *= st->codec->ticks_per_frame;
+    }
+    
+    if (st->avg_frame_rate.den && st->avg_frame_rate.num)
+        fps = av_q2d(st->avg_frame_rate);
+    else if (st->r_frame_rate.den && st->r_frame_rate.num)
+        fps = av_q2d(st->r_frame_rate);
+    else
+        fps = 1.0 / timebase;
+    
+    if (pFPS)
+        *pFPS = fps;
+    if (pTimeBase)
+        *pTimeBase = timebase;
+}
+
+- (BOOL)audioCodecIsSupported:(AVCodecContext *) audioCodecCtx;{
+    if (audioCodecCtx->sample_fmt == AV_SAMPLE_FMT_S16) {
+        return true;
+    }
+    return false;
+}
+
+- (void) closeScaler{
+    if (_swsContext) {
+        sws_freeContext(_swsContext);
+        _swsContext = NULL;
+    }
+    
+    if (_pictureValid) {
+        avpicture_free(&_picture);
+        _pictureValid = NO;
+    }
+}
+
 
 #pragma mark -  解码
 

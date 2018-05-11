@@ -110,11 +110,11 @@ typedef NS_ENUM(NSUInteger, LLYFrameType) {
     int totalVideoFrameCount;
     long long decodeVideoFrameWasteTimeMills;
     
-    //保存解码前的音视频流
+    //保存解码前的音视频流的索引
     NSArray *_videoStreams;
     NSArray *_audioStreams;
     
-    //当前音视频流属于哪个流
+    //当前打开的音视频流的索引
     NSInteger _videoStreamIndex;
     NSInteger _audioStreamIndex;
     
