@@ -455,46 +455,219 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
 
 #pragma mark -  解码
 
-- (NSArray *)decode:(CGFloat)minDuration errorState:(int *)errorState{}
+- (NSArray *)decode:(CGFloat)minDuration errorState:(int *)errorState{
+    
+    if (_videoStreamIndex == -1 || _audioStreamIndex == -1) {
+        return nil;
+    }
+    
+    NSMutableArray *resultArray = [NSMutableArray array];
+    AVPacket packet;
+    CGFloat decodeDuration = 0;
+    BOOL finished = NO;
+    while (!finished) {
+        //数据读取完了。。。
+        if (av_read_frame(_formatCtx, &packet) < 0) {
+            _isEOF = YES;
+            break;
+        }
+        
+        int pktSize = packet.size;
+        int pktStreamIndex = packet.stream_index;
+        if (pktStreamIndex == _videoStreamIndex) {
+            //当前数据是视频
 
-- (LLYFrame *)decodePacket:(AVPacket *)packet packetSize:(int)pktSize errorState:(int *)errorState{}
+        }
+        else if (pktStreamIndex == _audioStreamIndex){
+            //当前数据是音频
+            while (pktSize > 0) {
+                int gotFrame = 0;
+                //len =  number of bytes consumed from the input *AVPacket
+                int len = avcodec_decode_audio4(_audioCodecCtx, _audioFrame, &gotFrame, &packet);
+                if (len < 0) {
+                    NSLog(@"decode audio error, skip packet");
+                    break;
+                }
+                
+                if (gotFrame) {
+                    LLYAudioFrame *frame = [self handleAudioFrame];
+                    if (frame) {
+                        [resultArray addObject:frame];
+                        if (_videoStreamIndex == -1) {
+                            _decodePosition = frame.position;
+                            decodeDuration += frame.duration;
+                            if (decodeDuration > minDuration) {
+                                finished = YES;
+                            }
+                        }
+                    }
+                }
+                
+                if (len == 0) {
+                    break;
+                }
+                
+                pktSize -= len;
+            }
+
+        }
+        else{
+            NSLog(@"We Can Not Process Stream Except Audio And Video Stream...");
+        }
+        
+        av_packet_unref(&packet);
+    }
+    
+    _readLastestFrameTime = [[NSDate date] timeIntervalSince1970];
+    
+    return resultArray;
+}
+
+- (LLYFrame *)decodePacket:(AVPacket *)packet packetSize:(int)pktSize errorState:(int *)errorState{
+    return nil;
+}
+
+- (LLYAudioFrame *)handleAudioFrame{
+    
+    if (!_audioFrame->data[0]) {
+        return nil;
+    }
+    
+    const NSUInteger numChannels = _audioCodecCtx->channels;
+    NSInteger numFrames;
+    
+    void *audioData;
+    
+    if (_swrContext) {
+        const NSUInteger ratio = 2;
+        const int bufSize = av_samples_get_buffer_size(NULL, (int)numChannels ,(int)(_audioFrame->nb_samples * ratio), AV_SAMPLE_FMT_S16, 1);
+        if (!_swrBuffer || _swrBufferSize < bufSize) {
+            _swrBufferSize = bufSize;
+            _swrBuffer = realloc(_swrBuffer, _swrBufferSize);
+        }
+        Byte *outbuf[2] = {_swrBuffer,0};
+        numFrames = swr_convert(_swrContext, outbuf, (int)(_audioFrame->nb_samples * ratio), (const uint8_t **)_audioFrame->data, _audioFrame->nb_samples);
+        if (numFrames < 0) {
+            NSLog(@"fail resample audio");
+            return nil;
+        }
+        audioData = _swrBuffer;
+    }else{
+        if (_audioCodecCtx->sample_fmt != AV_SAMPLE_FMT_S16) {
+            NSLog(@"Audio format is invalid");
+            return nil;
+        }
+        audioData = _audioFrame->data[0];
+        numFrames = _audioFrame->nb_samples;
+    }
+    
+    //总帧数 = 一条信道的帧数*信道数
+    const NSUInteger numElements = numFrames * numChannels;
+    NSMutableData *pcmData = [NSMutableData dataWithLength:numElements * sizeof(SInt16)];
+    memcpy(pcmData.mutableBytes, audioData, numElements * sizeof(SInt16));
+    LLYAudioFrame *frame = [[LLYAudioFrame alloc]init];
+    frame.position = av_frame_get_best_effort_timestamp(_audioFrame) * _audioTimeBase;
+    frame.duration = av_frame_get_pkt_duration(_audioFrame) * _audioTimeBase;
+    frame.sampleData = pcmData;
+    frame.frameType = LLYFrameType_Audio;
+    
+    return frame;
+}
 
 #pragma mark - 打断处理
 //打断
-- (void)interrupt{}
+- (void)interrupt{
+    _subscribeTimeOutTimeInSecs = -1;
+    _interrupted = YES;
+    _isSubscribe = NO;
+}
 //打断状态
-- (BOOL)detectInterrupted{}
+- (BOOL)detectInterrupted{
+    //打断超时
+    if ([[NSDate date] timeIntervalSince1970] - _readLastestFrameTime > _subscribeTimeOutTimeInSecs) {
+        return YES;
+    }
+    return _interrupted;
+}
 
 static int interrupt_callback(void *ctx){
-    
+    if (!ctx) {
+        return 0;
+    }
+    __unsafe_unretained LLYDecoder *decoder = (__bridge LLYDecoder *)ctx;
+    const BOOL bRet = [decoder detectInterrupted];
+    if (bRet) {
+        NSLog(@"DEBUG: INTERRUPT_CALLBACK!");
+    }
+    return bRet;
 }
 
 #pragma mark - 埋点数据统计相关
 
-- (void)triggerFirstScreen{}
-- (void)addStreamStatus:(NSString *)status{}
-- (LLYBuriedPoint *)getBuriedPoint{}
+- (void)triggerFirstScreen{
+    //首屏显示成功
+    if (_buriedPoint.failOpenType == 1) {
+        _buriedPoint.firstScreenTimeMills = ([[NSDate date] timeIntervalSince1970] * 1000 - _buriedPoint.beginOpenTime) / 1000;
+    }
+}
+- (void)addStreamStatus:(NSString *)status{
+    if ([@"F" isEqualToString:status] && [[_buriedPoint.streamStatusArray lastObject] hasPrefix:@"F_"]) {
+        return;
+    }
+    
+    float timeInterval = ([[NSDate date] timeIntervalSince1970] * 1000 - _buriedPoint.beginOpenTime) / 1000;
+    [_buriedPoint.streamStatusArray addObject:[NSString stringWithFormat:@"%@_%.3f",status,timeInterval]];
+}
+- (LLYBuriedPoint *)getBuriedPoint{
+    return _buriedPoint;
+}
 
 
 #pragma mark - 其他属性
 
-- (BOOL)isEOF{}
+- (BOOL)isEOF{
+    return _isEOF;
+}
 
-- (BOOL)isSubscribed{}
+- (BOOL)isSubscribed{
+    return _isSubscribe;
+}
 
-- (NSUInteger)frameWidth{}
-- (NSUInteger)frameHeight{}
+- (NSUInteger)frameWidth{
+    return _videoCodecCtx ? _videoCodecCtx->width : 0;
+}
+- (NSUInteger)frameHeight{
+    return _videoCodecCtx ? _videoCodecCtx->height : 0;
+}
 
-- (CGFloat)sampleRate{}
+- (CGFloat)sampleRate{
+    return _audioCodecCtx ? _audioCodecCtx->sample_rate : 0;
+}
 
-- (NSUInteger)channels{}
+- (NSUInteger)channels{
+    return _audioCodecCtx ? _audioCodecCtx->channels : 0;
+}
 
-- (BOOL)validVideo{}
+- (BOOL)validVideo{
+    return _videoStreamIndex != -1;
+}
 
-- (BOOL)validAudio{}
+- (BOOL)validAudio{
+    return _audioStreamIndex != -1;
+}
 
-- (CGFloat)getVideoFPS{}
+- (CGFloat)getVideoFPS{
+    return _fps;
+}
 
-- (CGFloat)getDuration{}
+- (CGFloat)getDuration{
+    if (_formatCtx) {
+        if (_formatCtx->duration == AV_NOPTS_VALUE) {
+            return -1;
+        }
+        return _formatCtx->duration/AV_TIME_BASE;
+    }
+    return -1;
+}
 
 @end
