@@ -7,9 +7,15 @@
 //
 
 #import "ViewController.h"
+#import "LLYPlayerViewController.h"
+#import "CommonUtil.h"
 
-@interface ViewController ()
+NSString * const MIN_BUFFERED_DURATION = @"Min Buffered Duration";
+NSString * const MAX_BUFFERED_DURATION = @"Max Buffered Duration";
 
+@interface ViewController (){
+    NSMutableDictionary *_requestHeader;
+}
 @end
 
 @implementation ViewController
@@ -17,12 +23,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    _requestHeader = [NSMutableDictionary dictionary];
+    _requestHeader[MIN_BUFFERED_DURATION] = @(1.0f);
+    _requestHeader[MAX_BUFFERED_DURATION] = @(3.0f);
+    
 }
 
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+- (IBAction)startPlay:(id)sender {
+    NSString *path = [CommonUtil bundlePath:@"test.flv"];
+    LLYPlayerViewController *vc = [LLYPlayerViewController viewControllerWithContentPath:path contentFrame:self.view.bounds parameters:_requestHeader];
+    [self presentViewController:vc animated:YES completion:nil];
 }
 
 

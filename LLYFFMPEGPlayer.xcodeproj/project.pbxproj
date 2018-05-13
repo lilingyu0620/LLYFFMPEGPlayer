@@ -24,10 +24,13 @@
 		0A7FBA3620A2DB47002DE37D /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A7FBA2F20A2DB47002DE37D /* libswscale.a */; };
 		0A7FBA3F20A2DF71002DE37D /* test.flv in Resources */ = {isa = PBXBuildFile; fileRef = 0A7FBA3E20A2DF71002DE37D /* test.flv */; };
 		0A7FBA4220A2DF92002DE37D /* CommonUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA4120A2DF92002DE37D /* CommonUtil.m */; };
-		0A7FBA4820A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA4720A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m */; };
 		0A7FBA4B20A2E307002DE37D /* LLYSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA4A20A2E307002DE37D /* LLYSync.m */; };
 		0A7FBA4E20A2E323002DE37D /* LLYDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA4D20A2E323002DE37D /* LLYDecoder.m */; };
 		0A7FBA5120A2E352002DE37D /* LLYAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FBA5020A2E352002DE37D /* LLYAudioPlayer.m */; };
+		0AC12ECC20A7E6F3001483CF /* AVAudioSession+RouteUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC12ECA20A7E6F3001483CF /* AVAudioSession+RouteUtils.m */; };
+		0AC12ECD20A7E6F3001483CF /* ELAudioSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC12ECB20A7E6F3001483CF /* ELAudioSession.m */; };
+		0AC12ED020A7EA7D001483CF /* LLYFFMPEGPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC12ECF20A7EA7D001483CF /* LLYFFMPEGPlayerViewController.m */; };
+		0AC12ED320A7F40D001483CF /* LLYPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC12ED220A7F40D001483CF /* LLYPlayerViewController.m */; };
 		0ADC004120A6AC8D002AC903 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ADC004020A6AC8D002AC903 /* libiconv.2.4.0.tbd */; };
 		0ADC004320A6AC9A002AC903 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ADC004220A6AC9A002AC903 /* VideoToolbox.framework */; };
 		0ADC004520A6ACA4002AC903 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ADC004420A6ACA4002AC903 /* AVFoundation.framework */; };
@@ -178,14 +181,20 @@
 		0A7FBA3E20A2DF71002DE37D /* test.flv */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.flv; sourceTree = "<group>"; };
 		0A7FBA4020A2DF92002DE37D /* CommonUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonUtil.h; sourceTree = "<group>"; };
 		0A7FBA4120A2DF92002DE37D /* CommonUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommonUtil.m; sourceTree = "<group>"; };
-		0A7FBA4620A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYFFMPEGPlayerViewController.h; sourceTree = "<group>"; };
-		0A7FBA4720A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYFFMPEGPlayerViewController.m; sourceTree = "<group>"; };
 		0A7FBA4920A2E307002DE37D /* LLYSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYSync.h; sourceTree = "<group>"; };
 		0A7FBA4A20A2E307002DE37D /* LLYSync.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYSync.m; sourceTree = "<group>"; };
 		0A7FBA4C20A2E323002DE37D /* LLYDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYDecoder.h; sourceTree = "<group>"; };
 		0A7FBA4D20A2E323002DE37D /* LLYDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYDecoder.m; sourceTree = "<group>"; };
 		0A7FBA4F20A2E352002DE37D /* LLYAudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYAudioPlayer.h; sourceTree = "<group>"; };
 		0A7FBA5020A2E352002DE37D /* LLYAudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYAudioPlayer.m; sourceTree = "<group>"; };
+		0AC12EC820A7E6F3001483CF /* ELAudioSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELAudioSession.h; sourceTree = "<group>"; };
+		0AC12EC920A7E6F3001483CF /* AVAudioSession+RouteUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVAudioSession+RouteUtils.h"; sourceTree = "<group>"; };
+		0AC12ECA20A7E6F3001483CF /* AVAudioSession+RouteUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVAudioSession+RouteUtils.m"; sourceTree = "<group>"; };
+		0AC12ECB20A7E6F3001483CF /* ELAudioSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELAudioSession.m; sourceTree = "<group>"; };
+		0AC12ECE20A7EA7D001483CF /* LLYFFMPEGPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYFFMPEGPlayerViewController.h; sourceTree = "<group>"; };
+		0AC12ECF20A7EA7D001483CF /* LLYFFMPEGPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYFFMPEGPlayerViewController.m; sourceTree = "<group>"; };
+		0AC12ED120A7F40D001483CF /* LLYPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYPlayerViewController.h; sourceTree = "<group>"; };
+		0AC12ED220A7F40D001483CF /* LLYPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYPlayerViewController.m; sourceTree = "<group>"; };
 		0ADC004020A6AC8D002AC903 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		0ADC004220A6AC9A002AC903 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		0ADC004420A6ACA4002AC903 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -266,6 +275,8 @@
 				0A7FB98D20A2DB16002DE37D /* AppDelegate.m */,
 				0A7FB98F20A2DB16002DE37D /* ViewController.h */,
 				0A7FB99020A2DB16002DE37D /* ViewController.m */,
+				0AC12ED120A7F40D001483CF /* LLYPlayerViewController.h */,
+				0AC12ED220A7F40D001483CF /* LLYPlayerViewController.m */,
 				0A7FB99220A2DB16002DE37D /* Main.storyboard */,
 				0A7FB99520A2DB16002DE37D /* Assets.xcassets */,
 				0A7FB99720A2DB16002DE37D /* LaunchScreen.storyboard */,
@@ -492,8 +503,8 @@
 				0A7FBA3A20A2DF2D002DE37D /* videoplayer */,
 				0A7FBA3B20A2DF2D002DE37D /* decoder */,
 				0A7FBA3C20A2DF2D002DE37D /* sync */,
-				0A7FBA4620A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.h */,
-				0A7FBA4720A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m */,
+				0AC12ECE20A7EA7D001483CF /* LLYFFMPEGPlayerViewController.h */,
+				0AC12ECF20A7EA7D001483CF /* LLYFFMPEGPlayerViewController.m */,
 			);
 			path = player;
 			sourceTree = "<group>";
@@ -501,6 +512,10 @@
 		0A7FBA3920A2DF2D002DE37D /* audioplayer */ = {
 			isa = PBXGroup;
 			children = (
+				0AC12EC920A7E6F3001483CF /* AVAudioSession+RouteUtils.h */,
+				0AC12ECA20A7E6F3001483CF /* AVAudioSession+RouteUtils.m */,
+				0AC12EC820A7E6F3001483CF /* ELAudioSession.h */,
+				0AC12ECB20A7E6F3001483CF /* ELAudioSession.m */,
 				0A7FBA4F20A2E352002DE37D /* LLYAudioPlayer.h */,
 				0A7FBA5020A2E352002DE37D /* LLYAudioPlayer.m */,
 			);
@@ -690,11 +705,14 @@
 			files = (
 				0A7FBA4E20A2E323002DE37D /* LLYDecoder.m in Sources */,
 				0A7FB99120A2DB16002DE37D /* ViewController.m in Sources */,
+				0AC12ED320A7F40D001483CF /* LLYPlayerViewController.m in Sources */,
 				0A7FB99C20A2DB16002DE37D /* main.m in Sources */,
 				0A7FBA5120A2E352002DE37D /* LLYAudioPlayer.m in Sources */,
 				0A7FBA4220A2DF92002DE37D /* CommonUtil.m in Sources */,
-				0A7FBA4820A2E0DC002DE37D /* LLYFFMPEGPlayerViewController.m in Sources */,
+				0AC12ECC20A7E6F3001483CF /* AVAudioSession+RouteUtils.m in Sources */,
 				0A7FBA4B20A2E307002DE37D /* LLYSync.m in Sources */,
+				0AC12ECD20A7E6F3001483CF /* ELAudioSession.m in Sources */,
+				0AC12ED020A7EA7D001483CF /* LLYFFMPEGPlayerViewController.m in Sources */,
 				0A7FB98E20A2DB16002DE37D /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

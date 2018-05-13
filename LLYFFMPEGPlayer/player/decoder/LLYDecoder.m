@@ -92,8 +92,8 @@
     _readLastestFrameTime = [[NSDate date] timeIntervalSince1970] * 1000;//秒
     
     //初始化ffmpeg
-    avformat_network_init();
     av_register_all();
+    avformat_network_init();
     
     int openInputErrorCode = [self openInput:path paramater:parameter];
     if (openInputErrorCode > 0) {
@@ -117,25 +117,26 @@
     //重连次数
     _buriedPoint.retryTimes = _connectionRetry;
     
-    if (bRet) {
-        //在网络的播放器中有可能会拉到长宽都为0 并且pix_fmt是None的流 这个时候我们需要重连
-        NSInteger videoWidth = [self frameWidth];
-        NSInteger videoHeight = [self frameHeight];
-        int retryTimes = 5;
-        
-        while(((videoWidth <= 0 || videoHeight <= 0) && retryTimes > 0)){
-            NSLog(@"because of videoWidth and videoHeight is Zero We will Retry...");
-            usleep(500 * 1000);
-            _connectionRetry = 0;
-            bRet = [self openFile:path parameter:parameter error:pError];
-            if(!bRet){
-                continue;
-            }
-            retryTimes--;
-            videoWidth = [self frameWidth];
-            videoHeight = [self frameHeight];
-        }
-    }
+#warning 暂时注释掉
+//    if (bRet) {
+//        //在网络的播放器中有可能会拉到长宽都为0 并且pix_fmt是None的流 这个时候我们需要重连
+//        NSInteger videoWidth = [self frameWidth];
+//        NSInteger videoHeight = [self frameHeight];
+//        int retryTimes = 5;
+//
+//        while(((videoWidth <= 0 || videoHeight <= 0) && retryTimes > 0)){
+//            NSLog(@"because of videoWidth and videoHeight is Zero We will Retry...");
+//            usleep(500 * 1000);
+//            _connectionRetry = 0;
+//            bRet = [self openFile:path parameter:parameter error:pError];
+//            if(!bRet){
+//                continue;
+//            }
+//            retryTimes--;
+//            videoWidth = [self frameWidth];
+//            videoHeight = [self frameHeight];
+//        }
+//    }
     
     _isOpenInputSuccess = bRet;
     

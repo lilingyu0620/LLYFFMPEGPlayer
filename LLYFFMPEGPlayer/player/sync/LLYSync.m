@@ -378,10 +378,10 @@ static void * decodeFirstBufferRunLoop(void* ptr){
     [self checkPlayerStatus];
     
     //如果当前正在解码就返回空数据
-    if (_buffered) {
-        memset(outData, 0, numFrames * numChannels * sizeof(SInt16));
-        return;
-    }
+//    if (_buffered) {
+//        memset(outData, 0, numFrames * numChannels * sizeof(SInt16));
+//        return;
+//    }
     
     @autoreleasepool{
         while (numFrames > 0) {
@@ -552,16 +552,50 @@ float lastPosition = -1.0;
 }
 
 #pragma mark - 其他属性
-//使用硬件编码
-- (BOOL)usingHWCodec;
+
+//使用硬件编码 (暂时没实现硬解)
+- (BOOL)usingHWCodec{
+    return YES;
+}
 
 //音频采样率
-- (NSInteger)getAudioSampleRate{}
-- (NSInteger)getAudioChannels{}
+- (NSInteger)getAudioSampleRate{
+    if (_decoder) {
+        return [_decoder sampleRate];
+    }
+    return 0;
+}
+- (NSInteger)getAudioChannels{
+    if (_decoder) {
+        return [_decoder channels];
+    }
+    return 0;
+}
 
-- (CGFloat)getVideoFPS{}
-- (NSInteger)getVideoFrameHeight{}
-- (NSInteger)getVideoFrameWidth{}
+- (CGFloat)getVideoFPS{
+    if (_decoder) {
+        return [_decoder getVideoFPS];
+    }
+    return 0.0f;
+}
+- (NSInteger)getVideoFrameHeight{
+    if (_decoder) {
+        return [_decoder frameHeight];
+    }
+    return 0;
+}
 
-- (CGFloat)getDuration{}
+- (NSInteger)getVideoFrameWidth{
+    if (_decoder) {
+        return [_decoder frameWidth];
+    }
+    return 0;
+}
+
+- (CGFloat)getDuration{
+    if (_decoder) {
+        return [_decoder getDuration];
+    }
+    return 0.0f;
+}
 @end
