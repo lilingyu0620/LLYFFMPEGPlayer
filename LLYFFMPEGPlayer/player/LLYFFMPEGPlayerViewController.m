@@ -7,10 +7,13 @@
 //
 
 #import "LLYFFMPEGPlayerViewController.h"
+#import "LLYAudioPlayer.h"
+#import "LLYVideoPlayer.h"
 
 @interface LLYFFMPEGPlayerViewController ()<LLYAudioPlayerDataSourceDelegate>
 
 @property (nonatomic, strong) LLYAudioPlayer * audioPlayer;
+@property (nonatomic, strong) LLYVideoPlayer * videoPlayer;
 @property (nonatomic, strong) NSDictionary * parameters;
 @property (nonatomic, assign) CGRect contentFrame;
 @property (nonatomic, assign,getter=isPlaying) BOOL playing;
@@ -69,6 +72,12 @@
             
             if (openStatus == LLY_OPEN_SUCCESS) {
                 
+                //视频播放
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.view.backgroundColor = [UIColor clearColor];
+                    [self.view insertSubview:self.videoPlayer atIndex:0];
+                });
+                //音频播放
                 NSInteger audioChannels = [weakSelf.sync getAudioChannels];
                 NSInteger audioSampleRate = [weakSelf.sync getAudioSampleRate];
                 NSInteger bytesPerSample = 2;
@@ -135,8 +144,34 @@
 }
 
 - (UIImage *)movieSnapshot{
-    return nil;
+    if (!self.videoPlayer) {
+        return nil;
+    }
+    // See Technique Q&A QA1817: https://developer.apple.com/library/ios/qa/qa1817/_index.html
+    UIGraphicsBeginImageContextWithOptions(self.videoPlayer.bounds.size, YES, 0);
+    [self.videoPlayer drawViewHierarchyInRect:self.videoPlayer.bounds afterScreenUpdates:NO];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
 }
+
+- (LLYVideoPlayer *)videoPlayer;
+{
+    if (nil == _videoPlayer) {
+        CGRect bounds = self.view.bounds;
+        NSInteger textureWidth = [self.sync getVideoFrameWidth];
+        NSInteger textureHeight = [self.sync getVideoFrameHeight];
+        _videoPlayer = [[LLYVideoPlayer alloc] initWithFrame:bounds
+                                            textureWidth:textureWidth
+                                           textureHeight:textureHeight
+                                              shareGroup:_shareGroup];
+        _videoPlayer.contentMode = UIViewContentModeScaleAspectFill;
+        _videoPlayer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
+    }
+    return _videoPlayer;
+}
+
+
 
 #pragma mark - LLYAudioPlayerDataSourceDelegate
 
@@ -144,6 +179,10 @@
     
     if (self.sync && ![self.sync isPlayCompleted]) {
         [self.sync audioCallbackFillData:sampleBuffer numFrames:frameNum numChannels:channels];
+        LLYVideoFrame *videoFrame = [self.sync getCorrectVideoFrame];
+        if (videoFrame) {
+            [self.videoPlayer presentVideoFrame:videoFrame];
+        }
     }
     else{
         memset(sampleBuffer, 0, frameNum * channels * sizeof(SInt16));

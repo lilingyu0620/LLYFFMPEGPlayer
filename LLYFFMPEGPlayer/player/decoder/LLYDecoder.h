@@ -163,7 +163,7 @@ typedef NS_ENUM(NSUInteger, LLYFrameType) {
  @param errorState <#errorState description#>
  @return 返回一个已解码的帧
  */
-- (LLYFrame *)decodePacket:(AVPacket *)packet packetSize:(int)pktSize errorState:(int *)errorState;
+- (LLYVideoFrame *)decodePacket:(AVPacket)packet packetSize:(int)pktSize errorState:(int *)errorState;
 
 //打断
 - (void)interrupt;

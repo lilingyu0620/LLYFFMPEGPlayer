@@ -117,26 +117,25 @@
     //重连次数
     _buriedPoint.retryTimes = _connectionRetry;
     
-#warning 暂时注释掉
-//    if (bRet) {
-//        //在网络的播放器中有可能会拉到长宽都为0 并且pix_fmt是None的流 这个时候我们需要重连
-//        NSInteger videoWidth = [self frameWidth];
-//        NSInteger videoHeight = [self frameHeight];
-//        int retryTimes = 5;
-//
-//        while(((videoWidth <= 0 || videoHeight <= 0) && retryTimes > 0)){
-//            NSLog(@"because of videoWidth and videoHeight is Zero We will Retry...");
-//            usleep(500 * 1000);
-//            _connectionRetry = 0;
-//            bRet = [self openFile:path parameter:parameter error:pError];
-//            if(!bRet){
-//                continue;
-//            }
-//            retryTimes--;
-//            videoWidth = [self frameWidth];
-//            videoHeight = [self frameHeight];
-//        }
-//    }
+    if (bRet) {
+        //在网络的播放器中有可能会拉到长宽都为0 并且pix_fmt是None的流 这个时候我们需要重连
+        NSInteger videoWidth = [self frameWidth];
+        NSInteger videoHeight = [self frameHeight];
+        int retryTimes = 5;
+
+        while(((videoWidth <= 0 || videoHeight <= 0) && retryTimes > 0)){
+            NSLog(@"because of videoWidth and videoHeight is Zero We will Retry...");
+            usleep(500 * 1000);
+            _connectionRetry = 0;
+            bRet = [self openFile:path parameter:parameter error:pError];
+            if(!bRet){
+                continue;
+            }
+            retryTimes--;
+            videoWidth = [self frameWidth];
+            videoHeight = [self frameHeight];
+        }
+    }
     
     _isOpenInputSuccess = bRet;
     
@@ -441,6 +440,28 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
     return false;
 }
 
+
+- (BOOL) setupScaler
+{
+    [self closeScaler];
+    _pictureValid = avpicture_alloc(&_picture,
+                                    AV_PIX_FMT_YUV420P,
+                                    _videoCodecCtx->width,
+                                    _videoCodecCtx->height) == 0;
+    if (!_pictureValid)
+        return NO;
+    _swsContext = sws_getCachedContext(_swsContext,
+                                       _videoCodecCtx->width,
+                                       _videoCodecCtx->height,
+                                       _videoCodecCtx->pix_fmt,
+                                       _videoCodecCtx->width,
+                                       _videoCodecCtx->height,
+                                       AV_PIX_FMT_YUV420P,
+                                       SWS_FAST_BILINEAR,
+                                       NULL, NULL, NULL);
+    return _swsContext != NULL;
+}
+
 - (void) closeScaler{
     if (_swsContext) {
         sws_freeContext(_swsContext);
@@ -477,7 +498,18 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
         int pktStreamIndex = packet.stream_index;
         if (pktStreamIndex == _videoStreamIndex) {
             //当前数据是视频
-
+            double startDecodeTimeMills = CFAbsoluteTimeGetCurrent() * 1000;
+            LLYVideoFrame *videFrame = [self decodePacket:packet packetSize:pktSize errorState:errorState];
+            int wasteTimeMills = CFAbsoluteTimeGetCurrent() * 1000 - startDecodeTimeMills;
+            decodeVideoFrameWasteTimeMills +=  wasteTimeMills;
+            if (videFrame) {
+                totalVideoFrameCount++;
+                [resultArray addObject:videFrame];
+                decodeDuration += videFrame.duration;
+                if (decodeDuration > minDuration) {
+                    finished = YES;
+                }
+            }
         }
         else if (pktStreamIndex == _audioStreamIndex){
             //当前数据是音频
@@ -524,8 +556,36 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
     return resultArray;
 }
 
-- (LLYFrame *)decodePacket:(AVPacket *)packet packetSize:(int)pktSize errorState:(int *)errorState{
-    return nil;
+- (LLYVideoFrame *)decodePacket:(AVPacket)packet packetSize:(int)pktSize errorState:(int *)errorState{
+    
+    LLYVideoFrame *videoFrame = nil;
+    
+    while (pktSize > 0) {
+        int gotFrmae = 0;
+        int len = avcodec_decode_video2(_videoCodecCtx, _videoFrame, &gotFrmae, &packet);
+        if (len < 0) {
+            NSLog(@"decode video error, skip packet %s", av_err2str(len));
+            *errorState = 1;
+            break;
+        }
+        if (gotFrmae) {
+            videoFrame = [self handleVideoFrame];
+        }
+        
+        if(packet.flags == 1){
+            //IDR Frame
+            NSLog(@"IDR Frame %f", videoFrame.position);
+        } else if (packet.flags == 0) {
+            //NON-IDR Frame
+            NSLog(@"===========NON-IDR Frame=========== %f", videoFrame.position);
+        }
+        if (0 == len)
+            break;
+        pktSize -= len;
+    }
+    
+   
+    return videoFrame;
 }
 
 - (LLYAudioFrame *)handleAudioFrame{
@@ -573,6 +633,67 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
     frame.frameType = LLYFrameType_Audio;
     
     return frame;
+}
+
+- (LLYVideoFrame *)handleVideoFrame{
+    
+    if (!_videoFrame->data[0]) {
+        return nil;
+    }
+    
+    LLYVideoFrame *videoFrame = [[LLYVideoFrame alloc]init];
+    //将yuv格式转为rgb
+    if (_videoCodecCtx->pix_fmt == AV_PIX_FMT_YUV420P || _videoCodecCtx->pix_fmt == AV_PIX_FMT_YUVJ420P) {
+        videoFrame.luma = copyFrameData(_videoFrame->data[0], _videoFrame->linesize[0], _videoCodecCtx->width, _videoCodecCtx->height);
+        videoFrame.chromaB = copyFrameData(_videoFrame->data[1], _videoFrame->linesize[1], _videoCodecCtx->width/2, _videoCodecCtx->height/2);
+        videoFrame.chromaR = copyFrameData(_videoFrame->data[2], _videoFrame->linesize[2], _videoCodecCtx->width/2, _videoCodecCtx->height/2);
+    }else{
+        //不是yuv格式先要将格式转为yuv的
+        if (!_swsContext &&
+            ![self setupScaler]) {
+            NSLog(@"fail setup video scaler");
+            return nil;
+        }
+        
+        sws_scale(_swsContext,
+                  (const uint8_t **)_videoFrame->data,
+                  _videoFrame->linesize,
+                  0,
+                  _videoCodecCtx->height,
+                  _picture.data,
+                  _picture.linesize);
+        videoFrame.luma = copyFrameData(_picture.data[0], _videoFrame->linesize[0], _videoCodecCtx->width, _videoCodecCtx->height);
+        videoFrame.chromaB = copyFrameData(_picture.data[1], _videoFrame->linesize[1], _videoCodecCtx->width/2, _videoCodecCtx->height/2);
+        videoFrame.chromaR = copyFrameData(_picture.data[2], _videoFrame->linesize[2], _videoCodecCtx->width/2, _videoCodecCtx->height/2);
+    }
+    videoFrame.width = _videoCodecCtx->width;
+    videoFrame.height = _videoCodecCtx->height;
+    videoFrame.lineSize = _videoFrame->linesize[0];
+    videoFrame.frameType = LLYFrameType_Video;
+    videoFrame.position = av_frame_get_best_effort_timestamp(_videoFrame) * _videoTimeBase;
+    const int64_t frameDuration = av_frame_get_pkt_duration(_videoFrame);
+    if (frameDuration) {
+        videoFrame.duration = frameDuration * _videoTimeBase;
+        videoFrame.duration += _videoFrame->repeat_pict * _videoTimeBase * 0.5;
+    } else {
+        // sometimes, ffmpeg unable to determine a frame duration
+        // as example yuvj420p stream from web camera
+        videoFrame.duration = 1.0 / _fps;
+    }
+    
+    return videoFrame;
+}
+
+static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height){
+    width = MIN(linesize, width);
+    NSMutableData *md = [NSMutableData dataWithLength: width * height];
+    Byte *dst = md.mutableBytes;
+    for (NSUInteger i = 0; i < height; ++i) {
+        memcpy(dst, src, width);
+        dst += width;
+        src += linesize;
+    }
+    return md;
 }
 
 #pragma mark - 打断处理

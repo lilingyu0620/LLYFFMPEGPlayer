@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "LLYSync.h"
-#import "LLYAudioPlayer.h"
+
 
 @interface LLYFFMPEGPlayerViewController : UIViewController
 

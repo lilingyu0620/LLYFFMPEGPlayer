@@ -229,7 +229,8 @@ static BOOL isNetworkPath (NSString *path){
         @synchronized(_videoFrames){
             for (LLYFrame *frame in frames) {
                 if (frame.frameType == LLYFrameType_Video) {
-                    [_videoFrames addObject:frames];
+                    [_videoFrames addObject:frame];
+                    NSLog(@"_videoFrames 正在装数据.........");
                 }
             }
         }
@@ -336,6 +337,7 @@ static BOOL isNetworkPath (NSString *path){
                 int tmpDecodeVideoErrorState;
                 NSArray *frames = [_decoder decode:0.0f errorState:&tmpDecodeVideoErrorState];
                 if (frames.count) {
+                    NSLog(@"首屏解码成功啦！！！！！！！！！！！！");
                     good = [self addFrames:frames duration:duration];
                 }
             }
@@ -352,6 +354,7 @@ static BOOL isNetworkPath (NSString *path){
             if (_decoder && (_decoder.validVideo || _decoder.validAudio)) {
                 NSArray *frames = [_decoder decode:duration errorState:&_decodeErrorState];
                 if (frames.count) {
+                    NSLog(@"解码成功啦！！！！！！！！！！！！");
                     good = [self addFrames:frames duration:_maxBufferedDuration];
                 }
             }
@@ -416,6 +419,8 @@ static void * decodeFirstBufferRunLoop(void* ptr){
                 numFrames -= framesToCopy;
                 outData += framesToCopy * numChannels;
                 
+                NSLog(@"音频正在输出zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+                
                 //该帧数据已经用完的话需要置空当前帧
                 if (bytesToCopy < bytesLeft)
                     _currentAudioFramePos += bytesToCopy;
@@ -435,7 +440,54 @@ static int invalidGetCount = 0;
 float lastPosition = -1.0;
 
 - (LLYVideoFrame *)getCorrectVideoFrame{
-    return nil;
+    LLYVideoFrame *videoFrame = nil;
+    @synchronized(_videoFrames){
+        while (_videoFrames.count > 0) {
+            videoFrame = _videoFrames[0];
+            const CGFloat delta = _audioPosition - videoFrame.position;
+            NSLog(@"audioPosition = %f",_audioPosition);
+            NSLog(@"videoPosition = %f",videoFrame.position);
+            if (delta < (0 - _syncMaxTimeDiff)) {
+                NSLog(@"视频比音频快了好多,我们还是渲染上一帧");
+                videoFrame = nil;
+                break;
+            }
+
+            [_videoFrames removeObjectAtIndex:0];
+            if (delta > _syncMaxTimeDiff) {
+                NSLog(@"视频比音频慢了好多,我们需要继续从queue拿到合适的帧 _audioPosition is %.3f frame.position %.3f", _audioPosition, videoFrame.position);
+                videoFrame = nil;
+                continue;
+            }else{
+                break;
+            }
+            break;
+        }
+    }
+    
+    if (videoFrame) {
+        if (isFirstScreen) {
+            [_decoder triggerFirstScreen];
+            isFirstScreen = NO;
+        }
+        
+        if (nil != _currentVideoFrame) {
+            _currentVideoFrame = nil;
+        }
+        _currentVideoFrame = videoFrame;
+        
+        NSLog(@"视频文件正在输出vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+    }
+    
+    if (fabs(_currentVideoFrame.position - lastPosition) > 0.01f) {
+        lastPosition = _currentVideoFrame.position;
+        count++;
+        return _currentVideoFrame;
+    }
+    else{
+        invalidGetCount++;
+        return nil;
+    }
 }
 - (void)checkPlayerStatus{
     if (NULL == _decoder) {
@@ -503,7 +555,7 @@ float lastPosition = -1.0;
             });
         }
     }
-    if (!isDecoding && (0 == leftVideoFrames || 0 == leftAudioFrames)) {
+    if (!isDecodingFirstBuffer && (0 == leftVideoFrames || 0 == leftAudioFrames)) {
         //释放线程
         [self signalDecoderThread];
     }
