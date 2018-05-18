@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "LLYDecoder.h"
+#import "LLYHardDecoder.h"
 
 #define TIMEOUT_DECODE_ERROR            20
 #define TIMEOUT_BUFFER                  10
@@ -38,8 +39,11 @@ typedef enum : NSUInteger {
 @property (nonatomic, weak) id<LLYPlayerStatusDelegate> delegate;
 - (instancetype)initWithPlayerStatusDelegate:(id<LLYPlayerStatusDelegate>)delegate;
 
-- (LLYOpenStatus)openFile:(NSString *)path parameters:(NSDictionary *)parameters error:(NSError **)pError;
-- (LLYOpenStatus)openFile:(NSString *)path error:(NSError **)pError;
+- (LLYOpenStatus)openFile:(NSString *)path usingHWCodec:(BOOL)usingHWCodec error:(NSError **)pError;
+- (LLYOpenStatus)openFile:(NSString *)path usingHWCodec:(BOOL)usingHWCodec parameters:(NSDictionary *)parameters error:(NSError **)pError;
+
+//- (LLYOpenStatus)openFile:(NSString *)path parameters:(NSDictionary *)parameters error:(NSError **)pError;
+//- (LLYOpenStatus)openFile:(NSString *)path error:(NSError **)pError;
 - (void)closeFile;
 
 - (void)audioCallbackFillData:(SInt16 *)outData numFrames:(UInt32)numFrames numChannels:(UInt32)numChannels;

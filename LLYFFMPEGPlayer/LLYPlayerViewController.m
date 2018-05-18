@@ -19,17 +19,19 @@
 
 + (id)viewControllerWithContentPath:(NSString *)path
                        contentFrame:(CGRect)frame
-                         parameters:(NSDictionary *)parameters{
-    return [[LLYPlayerViewController alloc]initWithContentPath:path contentFrame:frame parameters:parameters];
+                         parameters:(NSDictionary *)parameters
+                       usingHWCodec:(BOOL)usingHWCodec{
+    return [[LLYPlayerViewController alloc]initWithContentPath:path contentFrame:frame parameters:parameters usingHWCodec:usingHWCodec];
 }
 
 - (id) initWithContentPath:(NSString *)path
               contentFrame:(CGRect)frame
-                parameters:(NSDictionary *)parameters {
+                parameters:(NSDictionary *)parameters
+              usingHWCodec:(BOOL)usingHWCodec{
     
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        self.ffmpegPlayerController = [LLYFFMPEGPlayerViewController viewControllerWithContentPath:path contentFrame:frame playerStateDelegate:self parameters:parameters];
+        self.ffmpegPlayerController = [LLYFFMPEGPlayerViewController viewControllerWithContentPath:path contentFrame:frame playerStateDelegate:self parameters:parameters usingHWCodec:usingHWCodec];
         [self addChildViewController:self.ffmpegPlayerController];
         [self.view addSubview:self.ffmpegPlayerController.view];
     }

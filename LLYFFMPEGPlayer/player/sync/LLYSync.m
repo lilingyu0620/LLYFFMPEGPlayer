@@ -23,6 +23,9 @@ NSString * const kMAX_BUFFERED_DURATION = @"Max_Buffered_Duration";
     
     LLYDecoder *_decoder;
     
+    //是否使用硬件解码
+    BOOL _usingHWCodec;
+    
     BOOL isDecoding;
     BOOL isInitializeDecodeThread;
     BOOL isDestoryed;
@@ -89,7 +92,7 @@ NSString * const kMAX_BUFFERED_DURATION = @"Max_Buffered_Duration";
 - (void)initPropertyWithPath:(NSString *)path Parameters:(NSDictionary *)parameters{
     
     //1、创建decoder实例
-    _decoder = [[LLYDecoder alloc]init];
+//    _decoder = [[LLYDecoder alloc]init];
     //2、初始化成员变量
     _currentVideoFrame = NULL;
     _currentAudioFramePos = 0;
@@ -167,6 +170,21 @@ NSString * const kMAX_BUFFERED_DURATION = @"Max_Buffered_Duration";
     return 0;
 }
 
+- (LLYOpenStatus)openFile:(NSString *)path usingHWCodec:(BOOL)usingHWCodec parameters:(NSDictionary *)parameters error:(NSError **)pError{
+    
+    //1、创建decoder实例
+    if(usingHWCodec){
+        BOOL isIOS8OrUpper = ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0);
+        if(!isIOS8OrUpper){
+            usingHWCodec = false;
+        }
+    }
+    _usingHWCodec = usingHWCodec;
+    [self createDecoderInstance];
+    
+    return [self openFile:path parameters:parameters error:pError];
+}
+
 - (LLYOpenStatus)openFile:(NSString *)path usingHWCodec:(BOOL)usingHWCodec error:(NSError **)pError{
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[FPS_PROBE_SIZE_CONFIGURED] = @(true);
@@ -176,7 +194,7 @@ NSString * const kMAX_BUFFERED_DURATION = @"Max_Buffered_Duration";
     durations[0] = @(1750000);
     durations[0] = @(2000000);
     parameters[MAX_ANALYZE_DURATION_ARRAY] = durations;
-    return [self openFile:path parameters:parameters error:pError];
+    return [self openFile:path usingHWCodec:usingHWCodec parameters:parameters error:pError];
 }
 
 static BOOL isNetworkPath (NSString *path){
@@ -228,11 +246,12 @@ static BOOL isNetworkPath (NSString *path){
     if (_decoder.validVideo) {
         @synchronized(_videoFrames){
             for (LLYFrame *frame in frames) {
-                if (frame.frameType == LLYFrameType_Video) {
+                if (frame.frameType == LLYFrameType_Video || frame.frameType == LLYFrameType_HardVideo) {
                     [_videoFrames addObject:frame];
                     NSLog(@"_videoFrames 正在装数据.........");
                 }
             }
+            NSLog(@"videoFramesCount = %lu",(unsigned long)_videoFrames.count);
         }
     }
     
@@ -337,7 +356,7 @@ static BOOL isNetworkPath (NSString *path){
                 int tmpDecodeVideoErrorState;
                 NSArray *frames = [_decoder decode:0.0f errorState:&tmpDecodeVideoErrorState];
                 if (frames.count) {
-                    NSLog(@"首屏解码成功啦！！！！！！！！！！！！");
+//                    NSLog(@"首屏解码成功啦！！！！！！！！！！！！");
                     good = [self addFrames:frames duration:duration];
                 }
             }
@@ -354,7 +373,7 @@ static BOOL isNetworkPath (NSString *path){
             if (_decoder && (_decoder.validVideo || _decoder.validAudio)) {
                 NSArray *frames = [_decoder decode:duration errorState:&_decodeErrorState];
                 if (frames.count) {
-                    NSLog(@"解码成功啦！！！！！！！！！！！！");
+//                    NSLog(@"解码成功啦！！！！！！！！！！！！");
                     good = [self addFrames:frames duration:_maxBufferedDuration];
                 }
             }
@@ -419,7 +438,7 @@ static void * decodeFirstBufferRunLoop(void* ptr){
                 numFrames -= framesToCopy;
                 outData += framesToCopy * numChannels;
                 
-                NSLog(@"音频正在输出zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+//                NSLog(@"音频正在输出zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
                 
                 //该帧数据已经用完的话需要置空当前帧
                 if (bytesToCopy < bytesLeft)
@@ -448,14 +467,14 @@ float lastPosition = -1.0;
             NSLog(@"audioPosition = %f",_audioPosition);
             NSLog(@"videoPosition = %f",videoFrame.position);
             if (delta < (0 - _syncMaxTimeDiff)) {
-                NSLog(@"视频比音频快了好多,我们还是渲染上一帧");
+//                NSLog(@"视频比音频快了好多,我们还是渲染上一帧");
                 videoFrame = nil;
                 break;
             }
 
             [_videoFrames removeObjectAtIndex:0];
             if (delta > _syncMaxTimeDiff) {
-                NSLog(@"视频比音频慢了好多,我们需要继续从queue拿到合适的帧 _audioPosition is %.3f frame.position %.3f", _audioPosition, videoFrame.position);
+//                NSLog(@"视频比音频慢了好多,我们需要继续从queue拿到合适的帧 _audioPosition is %.3f frame.position %.3f", _audioPosition, videoFrame.position);
                 videoFrame = nil;
                 continue;
             }else{
@@ -605,9 +624,18 @@ float lastPosition = -1.0;
 
 #pragma mark - 其他属性
 
+- (void)createDecoderInstance{
+    if(_usingHWCodec){
+        _decoder = [[LLYHardDecoder alloc] init];
+    } else {
+        _decoder = [[LLYDecoder alloc] init];
+    }
+}
+
+
 //使用硬件编码 (暂时没实现硬解)
 - (BOOL)usingHWCodec{
-    return YES;
+    return _usingHWCodec;
 }
 
 //音频采样率

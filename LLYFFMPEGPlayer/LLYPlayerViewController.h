@@ -12,6 +12,7 @@
 
 + (id)viewControllerWithContentPath:(NSString *)path
                        contentFrame:(CGRect)frame
-                         parameters:(NSDictionary *)parameters;
+                         parameters:(NSDictionary *)parameters
+                       usingHWCodec:(BOOL)usingHWCodec;
 
 @end

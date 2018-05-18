@@ -12,8 +12,8 @@
 
 @interface LLYVideoPlayer : UIView
 
-- (id) initWithFrame:(CGRect)frame textureWidth:(NSInteger)textureWidth textureHeight:(NSInteger)textureHeight;
-- (id) initWithFrame:(CGRect)frame textureWidth:(NSInteger)textureWidth textureHeight:(NSInteger)textureHeight  shareGroup:(EAGLSharegroup *)shareGroup;
+- (id) initWithFrame:(CGRect)frame textureWidth:(NSInteger)textureWidth textureHeight:(NSInteger)textureHeight usingHWCodec: (BOOL) usingHWCodec;
+- (id) initWithFrame:(CGRect)frame textureWidth:(NSInteger)textureWidth textureHeight:(NSInteger)textureHeight shareGroup:(EAGLSharegroup *)shareGroup usingHWCodec: (BOOL) usingHWCodec;
 
 - (void) presentVideoFrame:(LLYVideoFrame*) frame;
 

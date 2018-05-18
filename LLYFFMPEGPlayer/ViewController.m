@@ -37,7 +37,7 @@ NSString * const MAX_BUFFERED_DURATION = @"Max Buffered Duration";
 }
 - (IBAction)startPlay:(id)sender {
     NSString *path = [CommonUtil bundlePath:@"test.flv"];
-    LLYPlayerViewController *vc = [LLYPlayerViewController viewControllerWithContentPath:path contentFrame:self.view.bounds parameters:_requestHeader];
+    LLYPlayerViewController *vc = [LLYPlayerViewController viewControllerWithContentPath:path contentFrame:self.view.bounds parameters:_requestHeader usingHWCodec:YES];
     [self presentViewController:vc animated:YES completion:nil];
 }
 

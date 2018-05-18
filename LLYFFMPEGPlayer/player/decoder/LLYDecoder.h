@@ -22,6 +22,7 @@
 typedef NS_ENUM(NSUInteger, LLYFrameType) {
     LLYFrameType_Audio = 0,
     LLYFrameType_Video,
+    LLYFrameType_HardVideo,//视频硬解
 };
 
 

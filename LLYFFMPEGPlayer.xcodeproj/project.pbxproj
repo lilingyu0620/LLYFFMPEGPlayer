@@ -12,6 +12,8 @@
 		0A7B40D120AD76B6001F5588 /* BaseEffectFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B40CB20AD76B6001F5588 /* BaseEffectFilter.m */; };
 		0A7B40D220AD76B6001F5588 /* ContrastEnhancerFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B40CD20AD76B6001F5588 /* ContrastEnhancerFilter.m */; };
 		0A7B40D520AD76D4001F5588 /* LLYVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B40D420AD76D4001F5588 /* LLYVideoPlayer.m */; };
+		0A7E4F7020AE840300D363F7 /* LLYHardDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E4F6F20AE840300D363F7 /* LLYHardDecoder.m */; };
+		0A7E4F7320AEBDD100D363F7 /* YUVFrameFastCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E4F7120AEBDD100D363F7 /* YUVFrameFastCopier.m */; };
 		0A7FB98E20A2DB16002DE37D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FB98D20A2DB16002DE37D /* AppDelegate.m */; };
 		0A7FB99120A2DB16002DE37D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FB99020A2DB16002DE37D /* ViewController.m */; };
 		0A7FB99420A2DB16002DE37D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A7FB99220A2DB16002DE37D /* Main.storyboard */; };
@@ -73,6 +75,10 @@
 		0A7B40CE20AD76B6001F5588 /* ContrastEnhancerFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContrastEnhancerFilter.h; sourceTree = "<group>"; };
 		0A7B40D320AD76D4001F5588 /* LLYVideoPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYVideoPlayer.h; sourceTree = "<group>"; };
 		0A7B40D420AD76D4001F5588 /* LLYVideoPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYVideoPlayer.m; sourceTree = "<group>"; };
+		0A7E4F6E20AE840300D363F7 /* LLYHardDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYHardDecoder.h; sourceTree = "<group>"; };
+		0A7E4F6F20AE840300D363F7 /* LLYHardDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYHardDecoder.m; sourceTree = "<group>"; };
+		0A7E4F7120AEBDD100D363F7 /* YUVFrameFastCopier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YUVFrameFastCopier.m; sourceTree = "<group>"; };
+		0A7E4F7220AEBDD100D363F7 /* YUVFrameFastCopier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YUVFrameFastCopier.h; sourceTree = "<group>"; };
 		0A7FB98920A2DB16002DE37D /* LLYFFMPEGPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LLYFFMPEGPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A7FB98C20A2DB16002DE37D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0A7FB98D20A2DB16002DE37D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -274,6 +280,8 @@
 		0A7B40C820AD76B6001F5588 /* copier */ = {
 			isa = PBXGroup;
 			children = (
+				0A7E4F7220AEBDD100D363F7 /* YUVFrameFastCopier.h */,
+				0A7E4F7120AEBDD100D363F7 /* YUVFrameFastCopier.m */,
 				0A7B40C920AD76B6001F5588 /* YUVFrameCopier.m */,
 				0A7B40CA20AD76B6001F5588 /* YUVFrameCopier.h */,
 			);
@@ -583,6 +591,8 @@
 			children = (
 				0A7FBA4C20A2E323002DE37D /* LLYDecoder.h */,
 				0A7FBA4D20A2E323002DE37D /* LLYDecoder.m */,
+				0A7E4F6E20AE840300D363F7 /* LLYHardDecoder.h */,
+				0A7E4F6F20AE840300D363F7 /* LLYHardDecoder.m */,
 			);
 			path = decoder;
 			sourceTree = "<group>";
@@ -756,6 +766,7 @@
 				0A7B40CF20AD76B6001F5588 /* DirectPassRenderer.m in Sources */,
 				0A7FBA4E20A2E323002DE37D /* LLYDecoder.m in Sources */,
 				0A7B40D220AD76B6001F5588 /* ContrastEnhancerFilter.m in Sources */,
+				0A7E4F7020AE840300D363F7 /* LLYHardDecoder.m in Sources */,
 				0A7FB99120A2DB16002DE37D /* ViewController.m in Sources */,
 				0A7B40D120AD76B6001F5588 /* BaseEffectFilter.m in Sources */,
 				0AC12ED320A7F40D001483CF /* LLYPlayerViewController.m in Sources */,
@@ -763,6 +774,7 @@
 				0A7B40D020AD76B6001F5588 /* YUVFrameCopier.m in Sources */,
 				0A7FBA5120A2E352002DE37D /* LLYAudioPlayer.m in Sources */,
 				0A7FBA4220A2DF92002DE37D /* CommonUtil.m in Sources */,
+				0A7E4F7320AEBDD100D363F7 /* YUVFrameFastCopier.m in Sources */,
 				0AC12ECC20A7E6F3001483CF /* AVAudioSession+RouteUtils.m in Sources */,
 				0A7FBA4B20A2E307002DE37D /* LLYSync.m in Sources */,
 				0AC12ECD20A7E6F3001483CF /* ELAudioSession.m in Sources */,

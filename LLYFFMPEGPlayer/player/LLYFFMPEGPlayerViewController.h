@@ -15,11 +15,13 @@
 @property (nonatomic, strong) LLYSync * sync;
 @property (nonatomic, copy) NSString * urlStr;
 @property (nonatomic, weak) id<LLYPlayerStatusDelegate> statusDelegate;
+@property(nonatomic, assign) BOOL usingHWCodec;
 
 + (instancetype)viewControllerWithContentPath:(NSString *)path
                                  contentFrame:(CGRect)frame
                           playerStateDelegate:(id)playerStateDelegate
-                                   parameters: (NSDictionary *)parameters;
+                                   parameters:(NSDictionary *)parameters
+                                 usingHWCodec:(BOOL)usingHWCodec;
 
 - (void)play;
 

@@ -10,12 +10,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LLYFFMPEGPlayer/player/decoder/LLYDecoder.m"
-            timestampString = "548245232.822462"
+            timestampString = "548328625.608338"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "676"
-            endingLineNumber = "676"
+            startingLineNumber = "679"
+            endingLineNumber = "679"
             landmarkName = "-handleVideoFrame"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LLYFFMPEGPlayer/player/sync/LLYSync.m"
+            timestampString = "548328625.60842"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "631"
+            endingLineNumber = "631"
+            landmarkName = "-createDecoderInstance"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

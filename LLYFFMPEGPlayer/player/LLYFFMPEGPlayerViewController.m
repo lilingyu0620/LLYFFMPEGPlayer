@@ -36,17 +36,20 @@
 + (instancetype)viewControllerWithContentPath:(NSString *)path
                                  contentFrame:(CGRect)frame
                           playerStateDelegate:(id)playerStateDelegate
-                                   parameters: (NSDictionary *)parameters{
-    return [[LLYFFMPEGPlayerViewController alloc]initWithContentPath:path contentFrame:frame playerStateDelegate:playerStateDelegate parameters:parameters];
+                                   parameters: (NSDictionary *)parameters
+                                 usingHWCodec:(BOOL)usingHWCodec{
+    return [[LLYFFMPEGPlayerViewController alloc]initWithContentPath:path contentFrame:frame playerStateDelegate:playerStateDelegate parameters:parameters usingHWCodec:usingHWCodec];
 }
 
 - (instancetype) initWithContentPath:(NSString *)path
                         contentFrame:(CGRect)frame
                  playerStateDelegate:(id) playerStateDelegate
-                          parameters:(NSDictionary *)parameters{
+                          parameters:(NSDictionary *)parameters
+                        usingHWCodec:(BOOL)usingHWCodec{
     NSAssert(path.length > 0, @"empty path");
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
+        _usingHWCodec = usingHWCodec;
         _contentFrame = frame;
         _parameters = parameters;
         _urlStr = path;
@@ -64,10 +67,10 @@
             NSError *error = nil;
             LLYOpenStatus openStatus = LLY_OPEN_FAILED;
             if ([weakSelf.parameters count] > 0) {
-                openStatus = [weakSelf.sync openFile:weakSelf.urlStr parameters:weakSelf.parameters error:&error];
+                openStatus  = [weakSelf.sync openFile:weakSelf.urlStr usingHWCodec:_usingHWCodec parameters:weakSelf.parameters error:&error];
             }
             else{
-                openStatus = [weakSelf.sync openFile:weakSelf.urlStr error:&error];
+                openStatus = [weakSelf.sync openFile:weakSelf.urlStr usingHWCodec:_usingHWCodec error:&error];
             }
             
             if (openStatus == LLY_OPEN_SUCCESS) {
@@ -164,7 +167,8 @@
         _videoPlayer = [[LLYVideoPlayer alloc] initWithFrame:bounds
                                             textureWidth:textureWidth
                                            textureHeight:textureHeight
-                                              shareGroup:_shareGroup];
+                                              shareGroup:_shareGroup
+                                                usingHWCodec:_usingHWCodec];
         _videoPlayer.contentMode = UIViewContentModeScaleAspectFill;
         _videoPlayer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     }

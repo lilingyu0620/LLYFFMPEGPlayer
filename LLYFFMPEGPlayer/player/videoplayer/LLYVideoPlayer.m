@@ -10,6 +10,7 @@
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
 #import "YUVFrameCopier.h"
+#import "YUVFrameFastCopier.h"
 #import "ContrastEnhancerFilter.h"
 #import "DirectPassRenderer.h"
 
@@ -52,11 +53,11 @@
     return [CAEAGLLayer class];
 }
 
-- (id) initWithFrame:(CGRect)frame textureWidth:(NSInteger)textureWidth textureHeight:(NSInteger)textureHeight {
-    return [self initWithFrame:frame textureWidth:textureWidth textureHeight:textureHeight shareGroup:nil];
+- (id) initWithFrame:(CGRect)frame textureWidth:(NSInteger)textureWidth textureHeight:(NSInteger)textureHeight usingHWCodec: (BOOL) usingHWCodec{
+    return [self initWithFrame:frame textureWidth:textureWidth textureHeight:textureHeight shareGroup:nil usingHWCodec:usingHWCodec];
 }
 
-- (id) initWithFrame:(CGRect)frame textureWidth:(NSInteger)textureWidth textureHeight:(NSInteger)textureHeight  shareGroup:(EAGLSharegroup *)shareGroup
+- (id) initWithFrame:(CGRect)frame textureWidth:(NSInteger)textureWidth textureHeight:(NSInteger)textureHeight shareGroup:(EAGLSharegroup *)shareGroup usingHWCodec: (BOOL)usingHWCodec
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -99,7 +100,7 @@
                 NSLog(@"create Dispaly Framebuffer failed...");
             }
             
-            [strongSelf createCopierInstance];
+            [strongSelf createCopierInstance:usingHWCodec];
             if (![strongSelf->_videoFrameCopier prepareRender:textureWidth height:textureHeight]) {
                 NSLog(@"_videoFrameFastCopier prepareRender failed...");
             }
@@ -129,11 +130,6 @@
 - (BaseEffectFilter*) getImageProcessFilterInstance
 {
     return _filter;
-}
-
-- (void) createCopierInstance
-{
-    _videoFrameCopier = [[YUVFrameCopier alloc] init];
 }
 
 static int count = 0;
@@ -194,6 +190,15 @@ static const NSInteger kMaxOperationQueueCount = 3;
     }
     
 }
+
+- (void)createCopierInstance:(BOOL)usingHWCodec{
+    if(usingHWCodec){
+        _videoFrameCopier = [[YUVFrameFastCopier alloc] init];
+    } else{
+        _videoFrameCopier = [[YUVFrameCopier alloc] init];
+    }
+}
+
 
 - (BOOL) createDisplayFramebuffer;
 {

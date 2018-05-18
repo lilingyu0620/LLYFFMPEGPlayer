@@ -503,6 +503,9 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
             int wasteTimeMills = CFAbsoluteTimeGetCurrent() * 1000 - startDecodeTimeMills;
             decodeVideoFrameWasteTimeMills +=  wasteTimeMills;
             if (videFrame) {
+                
+                NSLog(@"视频帧解码成功=============");
+                
                 totalVideoFrameCount++;
                 [resultArray addObject:videFrame];
                 decodeDuration += videFrame.duration;
