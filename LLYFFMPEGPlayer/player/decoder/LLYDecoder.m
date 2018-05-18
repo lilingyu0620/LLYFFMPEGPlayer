@@ -642,7 +642,7 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
     }
     
     LLYVideoFrame *videoFrame = [[LLYVideoFrame alloc]init];
-    //将yuv格式转为rgb
+    //将yuv数据取出来
     if (_videoCodecCtx->pix_fmt == AV_PIX_FMT_YUV420P || _videoCodecCtx->pix_fmt == AV_PIX_FMT_YUVJ420P) {
         videoFrame.luma = copyFrameData(_videoFrame->data[0], _videoFrame->linesize[0], _videoCodecCtx->width, _videoCodecCtx->height);
         videoFrame.chromaB = copyFrameData(_videoFrame->data[1], _videoFrame->linesize[1], _videoCodecCtx->width/2, _videoCodecCtx->height/2);
