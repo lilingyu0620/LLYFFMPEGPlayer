@@ -26,6 +26,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.view.backgroundColor = [UIColor blackColor];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -77,7 +80,6 @@
                 
                 //视频播放
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    self.view.backgroundColor = [UIColor clearColor];
                     [self.view insertSubview:self.videoPlayer atIndex:0];
                 });
                 //音频播放
@@ -161,20 +163,28 @@
 - (LLYVideoPlayer *)videoPlayer;
 {
     if (nil == _videoPlayer) {
-        CGRect bounds = self.view.bounds;
         NSInteger textureWidth = [self.sync getVideoFrameWidth];
         NSInteger textureHeight = [self.sync getVideoFrameHeight];
+        CGRect bounds = [self playerBoundsWithTextureWidth:textureWidth textureHeight:textureHeight];
         _videoPlayer = [[LLYVideoPlayer alloc] initWithFrame:bounds
                                             textureWidth:textureWidth
                                            textureHeight:textureHeight
                                               shareGroup:_shareGroup
                                                 usingHWCodec:_usingHWCodec];
-        _videoPlayer.contentMode = UIViewContentModeScaleAspectFill;
+        _videoPlayer.contentMode = UIViewContentModeScaleAspectFit;
         _videoPlayer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     }
     return _videoPlayer;
 }
 
+- (CGRect)playerBoundsWithTextureWidth:(CGFloat)textureWidth textureHeight:(CGFloat)textureHeight {
+    
+    CGFloat playerWith = self.view.bounds.size.width;
+    CGFloat playerHeight = (textureHeight / textureWidth) * playerWith;
+    CGFloat y = (self.view.bounds.size.height - playerHeight) / 2.0;
+    CGRect bounds = CGRectMake(0, y, playerWith, playerHeight);
+    return bounds;
+}
 
 
 #pragma mark - LLYAudioPlayerDataSourceDelegate

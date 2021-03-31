@@ -70,7 +70,10 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
         
         CAEAGLLayer *eaglLayer = (CAEAGLLayer*) self.layer;
-        eaglLayer.opaque = YES;
+        eaglLayer.contentsGravity = kCAGravityResizeAspect;
+        eaglLayer.contentsScale = UIScreen.mainScreen.scale;
+        eaglLayer.opaque = NO;
+        eaglLayer.backgroundColor = [UIColor blackColor].CGColor;
         eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
                                         [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking,
                                         kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat,
@@ -202,6 +205,9 @@ static const NSInteger kMaxOperationQueueCount = 3;
 
 - (BOOL) createDisplayFramebuffer;
 {
+    
+    assert(![NSThread isMainThread]);
+    
     BOOL ret = TRUE;
     glGenFramebuffers(1, &_displayFramebuffer);
     glGenRenderbuffers(1, &_renderbuffer);

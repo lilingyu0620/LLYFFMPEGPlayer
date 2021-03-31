@@ -213,7 +213,7 @@
         formatCtx->max_analyze_duration = multiplier;
     }
     
-    //帧率
+    //帧数
     BOOL fpsProbeSizeConfiged = [parameters[FPS_PROBE_SIZE_CONFIGURED] floatValue];
     if (fpsProbeSizeConfiged) {
         formatCtx->fps_probe_size = 3;
@@ -488,7 +488,7 @@ static void avStreamFPSTimeBase(AVStream *st, CGFloat defaultTimeBase, CGFloat *
     CGFloat decodeDuration = 0;
     BOOL finished = NO;
     while (!finished) {
-        //数据读取完了。。。
+        // Get Packet
         if (av_read_frame(_formatCtx, &packet) < 0) {
             _isEOF = YES;
             break;
