@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A0D037B25FDC94800840D03 /* hebe.MP4 in Resources */ = {isa = PBXBuildFile; fileRef = 0A0D037A25FDC94800840D03 /* hebe.MP4 */; };
+		0A68A0492606320000A74192 /* 31163.flv in Resources */ = {isa = PBXBuildFile; fileRef = 0A68A0482606320000A74192 /* 31163.flv */; };
 		0A7B40CF20AD76B6001F5588 /* DirectPassRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B40C520AD76B6001F5588 /* DirectPassRenderer.m */; };
 		0A7B40D020AD76B6001F5588 /* YUVFrameCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B40C920AD76B6001F5588 /* YUVFrameCopier.m */; };
 		0A7B40D120AD76B6001F5588 /* BaseEffectFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7B40CB20AD76B6001F5588 /* BaseEffectFilter.m */; };
@@ -38,6 +40,7 @@
 		0AC12ECD20A7E6F3001483CF /* ELAudioSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC12ECB20A7E6F3001483CF /* ELAudioSession.m */; };
 		0AC12ED020A7EA7D001483CF /* LLYFFMPEGPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC12ECF20A7EA7D001483CF /* LLYFFMPEGPlayerViewController.m */; };
 		0AC12ED320A7F40D001483CF /* LLYPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC12ED220A7F40D001483CF /* LLYPlayerViewController.m */; };
+		0ACEAECD25FE209C00B69758 /* trailer.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0ACEAECC25FE209C00B69758 /* trailer.mp4 */; };
 		0ADC004120A6AC8D002AC903 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ADC004020A6AC8D002AC903 /* libiconv.2.4.0.tbd */; };
 		0ADC004320A6AC9A002AC903 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ADC004220A6AC9A002AC903 /* VideoToolbox.framework */; };
 		0ADC004520A6ACA4002AC903 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ADC004420A6ACA4002AC903 /* AVFoundation.framework */; };
@@ -65,6 +68,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A0D037A25FDC94800840D03 /* hebe.MP4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = hebe.MP4; sourceTree = "<group>"; };
+		0A68A0482606320000A74192 /* 31163.flv */ = {isa = PBXFileReference; lastKnownFileType = file; path = 31163.flv; sourceTree = "<group>"; };
 		0A7B40C520AD76B6001F5588 /* DirectPassRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DirectPassRenderer.m; sourceTree = "<group>"; };
 		0A7B40C620AD76B6001F5588 /* BaseEffectFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseEffectFilter.h; sourceTree = "<group>"; };
 		0A7B40C720AD76B6001F5588 /* DirectPassRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectPassRenderer.h; sourceTree = "<group>"; };
@@ -216,6 +221,7 @@
 		0AC12ECF20A7EA7D001483CF /* LLYFFMPEGPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYFFMPEGPlayerViewController.m; sourceTree = "<group>"; };
 		0AC12ED120A7F40D001483CF /* LLYPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLYPlayerViewController.h; sourceTree = "<group>"; };
 		0AC12ED220A7F40D001483CF /* LLYPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLYPlayerViewController.m; sourceTree = "<group>"; };
+		0ACEAECC25FE209C00B69758 /* trailer.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = trailer.mp4; sourceTree = "<group>"; };
 		0ADC004020A6AC8D002AC903 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		0ADC004220A6AC9A002AC903 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		0ADC004420A6ACA4002AC903 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -609,6 +615,9 @@
 		0A7FBA3D20A2DF2D002DE37D /* resource */ = {
 			isa = PBXGroup;
 			children = (
+				0A68A0482606320000A74192 /* 31163.flv */,
+				0ACEAECC25FE209C00B69758 /* trailer.mp4 */,
+				0A0D037A25FDC94800840D03 /* hebe.MP4 */,
 				0A7FBA3E20A2DF71002DE37D /* test.flv */,
 			);
 			path = resource;
@@ -734,10 +743,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A68A0492606320000A74192 /* 31163.flv in Resources */,
 				0A7FB99920A2DB16002DE37D /* LaunchScreen.storyboard in Resources */,
 				0A7FB99620A2DB16002DE37D /* Assets.xcassets in Resources */,
 				0A7FBA3F20A2DF71002DE37D /* test.flv in Resources */,
 				0A7FB99420A2DB16002DE37D /* Main.storyboard in Resources */,
+				0A0D037B25FDC94800840D03 /* hebe.MP4 in Resources */,
+				0ACEAECD25FE209C00B69758 /* trailer.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

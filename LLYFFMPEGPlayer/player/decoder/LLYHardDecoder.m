@@ -81,6 +81,7 @@
     //The time at which the sample will be decoded
     int64_t decompressionTimeStamp = 0;
     int duration = 0;
+    int32_t timeSpan = _formatCtx->streams[_videoStreamIndex]->time_base.den;
     
     if (status == noErr) {
         if (packet.pts == AV_NOPTS_VALUE) {
@@ -92,11 +93,11 @@
         
         decompressionTimeStamp = av_rescale_q(packet.dts, _formatCtx->streams[_videoStreamIndex]->time_base, AV_TIME_BASE_Q);
         duration = packet.duration;
+                
         if(!duration){
-            duration = 1000 / [self getVideoFPS];
+            duration = timeSpan / [self getVideoFPS];
         }
         
-        int32_t timeSpan = 1000;
         CMSampleTimingInfo timingInfo;
         timingInfo.presentationTimeStamp = CMTimeMake(presentationTimeStamp, timeSpan);
         timingInfo.decodeTimeStamp = CMTimeMake(decompressionTimeStamp, timeSpan);
@@ -129,7 +130,7 @@
             dispatch_semaphore_wait(self.decoderSemaphore, DISPATCH_TIME_FOREVER);
         }
         _videoFrame.position = presentationTimeStamp / 1000000.0;
-        _videoFrame.duration = (float)duration / 1000.0;
+        _videoFrame.duration = (float)duration / timeSpan;
         CFRelease(sampleBuffer);
     }
     
@@ -173,12 +174,14 @@ void decompressionSessionDecodeFrameCallback(void *decompressionOutputRefCon,
                                              CVImageBufferRef imageBuffer,
                                              CMTime presentationTimeStamp,
                                              CMTime presentationDuration){
+    __weak LLYHardDecoder *weakSelf = (__bridge LLYHardDecoder *)decompressionOutputRefCon;
+
     if (status != noErr || !imageBuffer) {
         NSLog(@"Error decompresssing frame at time: %.3f error: %d infoFlags: %u", (float)presentationTimeStamp.value/presentationTimeStamp.timescale, (int)status, (unsigned int)infoFlags);
+        dispatch_semaphore_signal(weakSelf.decoderSemaphore);
         return;
     }
     
-    __weak LLYHardDecoder *weakSelf = (__bridge LLYHardDecoder *)decompressionOutputRefCon;
     [weakSelf getDecodeImageData:imageBuffer pts:presentationTimeStamp duration:presentationDuration];
     //释放信号
     dispatch_semaphore_signal(weakSelf.decoderSemaphore);

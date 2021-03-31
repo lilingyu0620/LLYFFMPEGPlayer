@@ -354,7 +354,7 @@ static BOOL isNetworkPath (NSString *path){
         @autoreleasepool {
             if (_decoder && (_decoder.validVideo || _decoder.validAudio)) {
                 int tmpDecodeVideoErrorState;
-                NSArray *frames = [_decoder decode:0.0f errorState:&tmpDecodeVideoErrorState];
+                NSArray *frames = [_decoder decode:duration errorState:&tmpDecodeVideoErrorState];
                 if (frames.count) {
 //                    NSLog(@"首屏解码成功啦！！！！！！！！！！！！");
                     good = [self addFrames:frames duration:duration];
@@ -633,7 +633,7 @@ float lastPosition = -1.0;
 }
 
 
-//使用硬件编码 (暂时没实现硬解)
+//使用硬件编码
 - (BOOL)usingHWCodec{
     return _usingHWCodec;
 }
